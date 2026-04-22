@@ -48,7 +48,7 @@
 
 ## 实施的修复方案
 
-### 第一步：CubeMX配置（用户操作）
+### 第一步：CubeMX配置
 ✅ 已完成
 - 添加OLED_Mutex（互斥锁）
 - 添加UltrasonicQueue（消息队列，预留）
