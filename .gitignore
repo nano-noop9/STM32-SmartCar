@@ -1,0 +1,34 @@
+# Keil / MDK build outputs
+**/MDK-ARM/Objects/
+**/MDK-ARM/Listings/
+**/MDK-ARM/DebugConfig/
+**/MDK-ARM/*.uvguix.*
+**/MDK-ARM/*.uvoptx
+**/MDK-ARM/*.scvd
+
+# Build artifacts
+*.o
+*.d
+*.crf
+*.lst
+*.map
+*.axf
+*.elf
+*.hex
+*.bin
+*.lib
+*.dep
+*.lnp
+*.htm
+*.build_log.htm
+
+# IDE / local settings
+.vscode/
+.kiro/
+*.user
+*.bak
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
