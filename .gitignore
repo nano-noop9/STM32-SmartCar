@@ -7,6 +7,12 @@
 **/MDK-ARM/*.scvd
 
 # Build artifacts
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+.ninja_*
 *.o
 *.d
 *.crf
@@ -21,8 +27,10 @@
 *.lnp
 *.htm
 *.build_log.htm
+*.obj
 
 # IDE / local settings
+.idea/
 .vscode/
 .kiro/
 *.user
@@ -32,3 +40,4 @@
 # OS files
 .DS_Store
 Thumbs.db
+Desktop.ini

@@ -1,9 +1,0 @@
--I../Core/Inc
--I../Drivers/CMSIS/Device/ST/STM32F1xx/Include
--I../Drivers/CMSIS/Include
--I../Drivers/STM32F1xx_HAL_Driver/Inc
--I../SYSTEM
--I../HARDWARE
--I../HARDWARE/OLED
--DUSE_HAL_DRIVER
--DSTM32F103xB

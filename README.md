@@ -1,203 +1,160 @@
 # STM32 Smart Car
 
-基于 **STM32F103C8T6** 的智能车项目，包含 **裸机版** 与 **FreeRTOS 版** 两套实现。  
-项目集成了电机驱动、红外循迹、超声波测距、蓝牙通信、OLED 显示和 MPU6050 姿态采集等模块，实现了 **PID 循迹、PID 跟随、超声波避障、直线行驶、90° 转弯** 等功能。
+基于 **STM32 / FreeRTOS / PID / CMake** 的智能车控制系统，面向嵌入式项目展示与求职作品集场景，聚焦多传感器协同控制、实时任务调度和可复现构建流程。
 
----
+**English summary:** This project is a recruiter-facing STM32 smart car repository built around a FreeRTOS-based control system, PID-driven motion behaviors, Bluetooth joystick control, OLED status display, MPU6050 attitude sensing, and a CMake-based build flow. It demonstrates not only embedded feature delivery, but also architecture evolution from legacy Keil projects to a cleaner, reproducible firmware workspace.
+
+## 项目亮点
+
+- **FreeRTOS 多任务控制**：将输入、显示、模式切换和运动控制拆分为独立任务，并通过队列、信号量、互斥锁协调运行。
+- **PID 控制落地**：完成红外循迹 PID、超声波跟随 PID、姿态辅助控制等闭环逻辑，而不是停留在单模块实验。
+- **多传感器协同**：集成红外、超声波、MPU6050、蓝牙串口与 OLED，形成完整的智能车控制链路。
+- **蓝牙摇杆遥控**：支持无线操控与模式切换，并加入失联超时保护，降低遥控场景下的误动作风险。
+- **CMake + CubeMX 工程化**：在保留 `Project.ioc` 的同时补齐 CMake 工具链与 Preset，支持更现代的构建和索引体验。
 
 ## 项目展示
 
 ### 实物图
-> 在这里插入你的小车图片
 
-![smart car photo](./docs/images/car.jpg)
+![Smart car photo 1](docs/images/car1.jpg)
+![Smart car photo 2](docs/images/car2.jpg)
 
 ### 功能演示
-> 在这里插入演示视频链接，例如 GitHub 附件 / B站 / YouTube
 
-- [功能演示视频链接 1]()
-- [功能演示视频链接 2]()
+| 避障 | 循迹 | 蓝牙摇杆控制 |
+| --- | --- | --- |
+| ![Obstacle avoidance](docs/images/避障.gif) | ![Line tracking](docs/images/循迹.gif) | ![Joystick control](docs/images/摇杆控制.gif) |
 
-### 系统结构图
-> 在这里插入系统框图 / 接线图 / 模块框图
+### 结构/原理图
 
-![system diagram](./docs/images/system_diagram.png)
+![FreeRTOS task sketch](docs/images/Freertos.Tasl.png)
+![Schematic](docs/images/原理图.png)
 
----
+## 系统能力概览
 
-## 项目背景
-
-这是一个基于 STM32 的智能车控制项目，目标是完成多传感器协同控制，并在实际运行中实现循迹、跟随、避障和姿态辅助转向等功能。
-
-项目整体参考了开源智能车方案，但从硬件搭建、模块接线、工程运行、功能调试到整车联调均由本人独立完成，并在实践中对部分模块进行了优化，例如：
-
-- 对 **超声波测距数据增加滤波处理**
-- 在 **FreeRTOS 版本中为 OLED 显示增加互斥锁**
-- 对 **PID 参数** 和 **蓝牙摇杆参数** 进行调试与优化
-
----
-
-## 项目功能
-
-### 已实现功能
-- OLED 显示基本运行信息
-- PID 循迹
-- PID 跟随
-- 超声波避障
-- MPU6050 辅助直线行驶
-- MPU6050 辅助 90° 转弯
-- 裸机版运行
-- FreeRTOS 版运行
-
-### 计划继续优化
-- 防止速度过大翻车功能 **（待改进）**
-- 蓝牙摇杆控制 **（待改进）**
-- OLED 显示界面优化 **（待改进）**
-- 更多异常情况处理与稳定性优化 **（待改进）**
-
----
-
-## 硬件平台
-
-- 主控：STM32F103C8T6
-- 电机驱动：A4950
-- 红外循迹模块：4 路红外传感器
-- 超声波模块：HC-SR04
-- 蓝牙模块：HC-05
-- 显示模块：I2C OLED
-- 姿态传感器：MPU6050
-
----
-
-## 模块介绍与选用原因
-
-### 1. STM32F103C8T6
-作为整车控制核心，负责传感器采集、控制运算、通信和电机驱动控制。
-
-**选用原因：**
-- STM32F1 系列资料多、生态成熟，适合入门和项目开发
-- 资源足够支撑本项目的多模块接入
-- 支持丰富外设，方便接入定时器、I2C、USART、PWM 等功能
-
-### 2. A4950 电机驱动
-用于驱动直流减速电机，实现前进、后退、转向和差速控制。
-
-**选用原因：**
-- 能满足智能车小功率直流电机驱动需求
-- 适合配合 PWM 做调速控制
-- 在常见智能车项目中使用较多，资料相对容易获取
-
-### 3. 4 路红外循迹模块
-用于检测地面黑线位置，为循迹控制提供输入信号。
-
-**选用原因：**
-- 成本低，结构简单，适合基础循迹功能实现
-- 响应速度快，便于实时控制
-- 4 路方案能提供更丰富的偏差信息，适合 PID 循迹调试
-
-### 4. HC-SR04 超声波模块
-用于测量前方障碍物距离，实现避障与跟随功能。
-
-**选用原因：**
-- 接口简单，使用方便
-- 适合中短距离测距
-- 很适合智能车做基础避障和目标跟随
-
-**项目中的优化：**
-- 对测距结果增加了滤波处理，减小数据抖动，提高控制稳定性
-
-### 5. HC-05 蓝牙模块
-用于无线通信和遥控扩展。
-
-**选用原因：**
-- 串口通信简单，方便与 STM32 对接
-- 可通过手机进行调试和控制
-- 适合后续扩展蓝牙摇杆控制功能 **（待改进）**
-
-### 6. I2C OLED 显示模块
-用于实时显示智能车运行状态、模式和基础数据。
-
-**选用原因：**
-- 接线简单，占用 IO 少
-- 显示清晰，适合显示调试信息
-- 对嵌入式项目调试帮助很大
-
-**项目中的优化：**
-- 在 FreeRTOS 版本中为 OLED 显示增加了互斥锁，避免多任务访问冲突
-
-### 7. MPU6050
-用于姿态信息采集，辅助直线行驶和 90° 转弯控制。
-
-**选用原因：**
-- 可输出加速度和角速度数据
-- 适合做方向修正和姿态辅助
-- 方便后续扩展更复杂的运动控制
-
-**后续计划：**
-- 基于姿态数据增加防翻车控制逻辑 **（待改进）**
-
----
+| 能力 | 实现方式 | 关键模块 | 工程价值 |
+| --- | --- | --- | --- |
+| OLED 状态显示 | I2C OLED 实时显示运行状态、速度、距离和调试信息 | `HARDWARE/OLED` | 提升联调效率，降低“黑盒运行”问题 |
+| 蓝牙遥控 | 串口接收遥控/摇杆数据并切换控制模式 | `Core/Src/usart.c`, `HARDWARE/joystick.c` | 支持无线交互与远程调试 |
+| 红外循迹 | 4 路红外输入结合 PID 输出左右轮差速 | `SYSTEM/PID.c` | 将传感器偏差转化为稳定运动控制 |
+| 超声波避障 | HC-SR04 测距 + 行为逻辑决策 | `HARDWARE/Sonic.c` | 实现环境感知与自主避障 |
+| 超声波跟随 | 距离测量配合 PID 输出目标速度 | `HARDWARE/Sonic.c`, `SYSTEM/PID.c` | 体现闭环控制在场景中的真实使用 |
+| MPU6050 姿态辅助 | 读取姿态信息并修正行走方向 | `HARDWARE/MPU6050`, `SYSTEM/PID.c` | 提升直行与转向控制的稳定性 |
+| 多任务调度 | 任务、队列、信号量、互斥锁协同 | `Core/Src/freertos.c` | 体现 RTOS 架构设计能力 |
+| CMake 构建 | Preset + 工具链文件 + CubeMX 生成代码 | `CMakeLists.txt`, `CMakePresets.json`, `cmake/` | 体现从 IDE 工程到现代构建的升级能力 |
 
 ## 软件架构
 
-本项目包含两个版本：
+当前主版本为 **CMake + FreeRTOS** 工程，核心任务划分如下：
 
-### 1. 裸机版
-适合学习 STM32 基础外设与单循环控制逻辑。  
-主要通过主循环轮询与中断配合完成各模块功能。
+- `StopTask`：处理停车态与安全停止逻辑，确保模式为停止时电机输出及时清零。
+- `InputTask`：接收按键/蓝牙输入，负责模式切换与输入事件分发。
+- `OLEDTask`：刷新显示内容，输出速度、距离、模式和调试状态。
+- `MultiModeTask`：承载主要模式逻辑，包括循迹、跟随、避障和姿态辅助控制。
 
-### 2. FreeRTOS 版
-在裸机版基础上引入 FreeRTOS，对不同功能进行任务划分，提升系统结构清晰度和模块独立性。
+配套同步机制：
 
-> 这里建议你后面补一张 FreeRTOS 任务框图
+- `ModeQueue`：传递模式切换事件
+- `UltrasonicQueue`：传递测距相关数据
+- `OLED_Mutex`：保护多任务下的 OLED 共享访问
+- `KeySem`：同步按键/输入事件
 
-例如可以划分为：
-- 传感器采集任务
-- 控制决策任务
-- 电机控制任务
-- OLED 显示任务
-- 蓝牙通信任务
+从读者视角看，这个项目的重点不只是“功能能跑”，而是已经形成了比较清楚的控制链路：
 
----
+1. 输入侧接收蓝牙或按键事件。
+2. 调度侧根据当前模式分发控制逻辑。
+3. 控制侧结合红外、超声波、MPU6050 数据执行 PID 或行为决策。
+4. 输出侧驱动电机并将关键状态显示到 OLED。
 
-## 核心技术点
+## 关键优化
 
-- 基于 **STM32F103C8T6** 完成多模块智能车系统集成
-- 实现 **PID 循迹** 与 **PID 跟随**
-- 实现 **超声波避障**
-- 结合 **MPU6050** 完成直线行驶和 90° 转弯辅助控制
-- 完成 **裸机版** 与 **FreeRTOS 版** 双版本实现
-- 针对超声波测距结果加入 **滤波优化**
-- 针对 FreeRTOS 下 OLED 共享访问问题加入 **互斥锁保护**
+### 1. 超声波读数滤波与时序修正
 
----
+- 在 `HARDWARE/Sonic.c` 中加入移动平均滤波，降低 HC-SR04 抖动对控制策略的影响。
+- 按模块时序要求约束最小读数间隔，避免高频读取造成测距异常。
+- 对超时和无效测距增加保护逻辑，减少异常值直接传入控制环。
 
-## 调试与优化记录
+### 2. OLED 多任务互斥访问
 
-在项目调试过程中，重点解决和处理了以下问题：
+- FreeRTOS 版本中使用 `OLED_Mutex` 保护显示资源，避免多个任务同时写屏导致乱码或显示错乱。
+- 将显示从“附属逻辑”提升为独立任务，让调试信息输出更稳定。
 
-- **PID 调参困难**  
-  在循迹和跟随过程中，反复调整参数以平衡响应速度与稳定性。
+### 3. 摇杆超时保护
 
-- **RTOS 下超声波读取异常**  
-  在 FreeRTOS 版本中，曾出现超声波数据读取不到的问题，后续通过任务运行逻辑分析和模块调试逐步解决。
+- 在 `HARDWARE/joystick.c` 中记录最近一次有效摇杆包的时间戳。
+- 当蓝牙摇杆数据超时未更新时，不再继续写入电机目标速度，降低失联后车辆继续运行的风险。
 
-- **电机控制不稳定**  
-  在差速控制与转向过程中，针对运行不稳定问题进行了参数和控制逻辑调整。
+### 4. 姿态、速度与 PID 联动
 
-- **超声波测距波动较大**  
-  通过增加滤波处理，提高测距结果稳定性。
+- 用电机转速 PID 保证基础速度控制。
+- 用红外循迹 PID 和超声波跟随 PID 生成差速/速度调整量。
+- 用 MPU6050 姿态信息修正直线行驶和转向行为，提高运动稳定性。
 
-- **OLED 多任务访问冲突**  
-  在 FreeRTOS 版本中通过加入互斥锁，避免显示异常。
+## 快速开始
 
----
+### 环境依赖
 
-## 目录结构
+- `arm-none-eabi-gcc`
+- `cmake >= 3.22`
+- `ninja`
+- STM32CubeMX 生成的工程基础文件
+
+### 配置与构建
+
+```bash
+cmake --preset Debug
+cmake --build --preset Debug
+```
+
+默认 Preset 会使用仓库中的工具链文件：
+
+- `cmake/gcc-arm-none-eabi.cmake`
+- `cmake/stm32cubemx/CMakeLists.txt`
+
+### 重新打开 CubeMX 工程
+
+如需调整外设或重新生成初始化代码，可使用 STM32CubeMX 打开：
+
+```text
+Project.ioc
+```
+
+## 仓库结构
 
 ```text
 .
-├── bare-metal/      # 裸机版本
-├── freertos/        # FreeRTOS 版本
-├── docs/            # 图片、视频、结构图等展示资料（建议后续补充）
-└── README.md
+|-- CMakeLists.txt
+|-- CMakePresets.json
+|-- Project.ioc
+|-- Core/
+|-- Drivers/
+|-- HARDWARE/
+|-- Middlewares/
+|-- SYSTEM/
+|-- cmake/
+|-- docs/
+`-- legacy/
+```
+
+- 根目录：当前主版本，面向持续维护和展示
+- `legacy/bare-metal/`：早期裸机版本
+- `legacy/freertos/`：早期 FreeRTOS + Keil 工程版本
+
+## 项目演进
+
+这个仓库保留了项目从“能跑起来”到“更像一个完整工程”的演进过程：
+
+- **当前主版本**：CMake + FreeRTOS，强调结构清晰、构建可复现、便于扩展
+- **历史版本**：裸机版与早期 FreeRTOS/Keil 版，作为功能验证与架构演进记录
+
+这对求职展示很重要，因为它不仅说明你做过一个智能车，还说明你有把项目逐步工程化的意识和能力。
+
+## Resume-ready Summary
+
+**中文简历描述：**
+
+基于 STM32F103 的智能车控制系统，使用 FreeRTOS 构建多任务控制架构，集成 OLED 显示、蓝牙摇杆遥控、红外循迹、超声波避障/跟随、MPU6050 姿态辅助控制等功能；使用 PID 算法完成循迹、跟随与运动修正，并将项目升级为支持 CMake + CubeMX 的可复现嵌入式构建工程。
+
+**English resume summary:**
+
+Built an STM32F103-based smart car control system with a FreeRTOS task architecture, integrating OLED display, Bluetooth joystick control, infrared line tracking, ultrasonic obstacle avoidance/following, and MPU6050-based attitude assistance. Implemented PID-driven motion control and evolved the firmware into a reproducible CMake + CubeMX embedded project.
