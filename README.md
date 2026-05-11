@@ -1,9 +1,8 @@
 # STM32 Smart Car
 
-基于 **STM32 / FreeRTOS / PID / CMake** 的智能车控制系统，面向嵌入式项目展示与求职作品集场景，聚焦多传感器协同控制、实时任务调度和可复现构建流程。
+基于 **STM32 / FreeRTOS / PID / CMake** 的智能车控制系统，围绕实时控制与嵌入式软件架构展开，实践多任务调度、传感器融合、运动控制及模块化固件设计。
 
-**English summary:** This project is a recruiter-facing STM32 smart car repository built around a FreeRTOS-based control system, PID-driven motion behaviors, Bluetooth joystick control, OLED status display, MPU6050 attitude sensing, and a CMake-based build flow. It demonstrates not only embedded feature delivery, but also architecture evolution from legacy Keil projects to a cleaner, reproducible firmware workspace.
-
+**English summary:** A STM32 smart car project centered around real-time control and embedded software architecture, featuring multitasking, sensor integration, motion control, and modular firmware design.
 ## 项目亮点
 
 - **FreeRTOS 多任务控制**：将输入、显示、模式切换和运动控制拆分为独立任务，并通过队列、信号量、互斥锁协调运行。
